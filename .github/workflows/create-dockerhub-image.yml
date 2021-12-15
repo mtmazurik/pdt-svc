@@ -3,13 +3,9 @@ name: Docker Image CI
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
       -
         name: Set up QEMU
@@ -30,6 +26,3 @@ jobs:
         with:
           push: true
           tags: mtmazurik/pdt-svc:latest
-      -
-        name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
