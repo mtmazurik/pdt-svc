@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["pdt-svc.csproj", "."]
-RUN dotnet restore "./pdt-svc.csproj"
+COPY ["pdt.svc/pdt.svc.csproj", "pdt.svc/"]
+RUN dotnet restore "pdt.svc/pdt.svc.csproj"
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "pdt-svc.csproj" -c Release -o /app/build
+WORKDIR "/src/pdt.svc"
+RUN dotnet build "pdt.svc.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "pdt-svc.csproj" -c Release -o /app/publish
+RUN dotnet publish "pdt.svc.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "pdt-svc.dll"]
+ENTRYPOINT ["dotnet", "pdt.svc.dll"]
