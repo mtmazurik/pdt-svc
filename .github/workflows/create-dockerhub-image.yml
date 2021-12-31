@@ -20,7 +20,7 @@ jobs:
       - name: App Settings Variable subsitution
         uses: microsoft/variable-substitution@v1
         with:
-          files: './pdt.svc/appsettings.json'
+          files: '${{env.DOTNET_ROOT}}/pdt.svc/appsettings.json'
         env:
           SearchEngine.SearchResultsMax: '50'
           SearchEngine.GoogleCustomSearchCx: ${{env.GOOGLE_CUSTOM_SEARCH_CX}}
