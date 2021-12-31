@@ -21,6 +21,6 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v5
         with:
-          dockerfile: ./pdt.svc/Dockerfile
+          file: ./pdt.svc/Dockerfile
           push: true
           tags: mtmazurik/pdt-svc:latest
