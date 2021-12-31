@@ -23,8 +23,8 @@ namespace pdt.svc.services
 
     public class SearchEngine : ISearchEngine
     {
-        string _cx = "c2d756b5630a47741";                                               // search engine created
-        string _apiKey = "AIzaSyC0obKxR4EefZpPddEr9RgkHpJYHt1_wdQ";                     // Google API key
+        string _cx = "***";                         // search engine created
+        string _apiKey = "***";                     // Google API key
 
         public List<SearchResult> Search(string queryString, int searchResultsMax = 50)
         {
