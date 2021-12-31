@@ -23,20 +23,17 @@ namespace pdt.svc.services
 
     public class SearchEngine : ISearchEngine
     {
-        string _cx = "***";                         // search engine created
-        string _apiKey = "***";                     // Google API key
-
         public List<SearchResult> Search(string queryString, int searchResultsMax = 50)
         {
             var results = new List<SearchResult>();
 
+            string tenPerPageQueryString = "";
             for (int i = 0; i < searchResultsMax; i = i + 10)
             {
 
 #pragma warning disable SYSLIB0014 // Type or member is obsolete
-                var request = WebRequest.Create("https://www.googleapis.com/customsearch/v1"
-                    + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + queryString
-                    + "&start=" + i);
+                tenPerPageQueryString = queryString + "&start=" + i;      // need to offset by i each iteration
+                var request = WebRequest.Create(tenPerPageQueryString);
 #pragma warning restore SYSLIB0014 // Type or member is obsolete
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();

@@ -6,13 +6,13 @@ namespace pdt_svc.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class SearchController : ControllerBase
+    public class searchController : ControllerBase
     {
         ISearchEngine? _engine;
         IConfiguration Configuration;
 
         // ctor
-        public SearchController(ISearchEngine searchEngine, 
+        public searchController(ISearchEngine searchEngine, 
                                 IConfiguration configuration)           
         {
             _engine = searchEngine;
@@ -26,7 +26,13 @@ namespace pdt_svc.Controllers
 
             try
             {
-                List<SearchResult> results = _engine.Search(term, Convert.ToInt32(Configuration["SearchResultsMax"].ToString()));
+                string cx = Configuration["SearchEngine:GoogleCustomSearchCx"].ToString();                  // read secrets in from appsettings or env vars during GitHub Actions
+                string apiKey = Configuration["SearchEngine:GoogleCustomSearchApiKey"].ToString();
+                string queryString = "https://www.googleapis.com/customsearch/v1"
+                    + "?key=" + apiKey + "&cx=" + cx + "&q=" + term;
+
+                int maxResultCount = Convert.ToInt32(Configuration["SearchEngine:SearchResultsMax"].ToString());
+                List<SearchResult> results = _engine.Search(queryString, maxResultCount);
                 return Ok(results);
             }
             catch 

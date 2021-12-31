@@ -5,7 +5,7 @@ namespace pdt_svc.Controllers
 {
     [Route("[controller]")] //   /admin
     [ApiController]
-    public class AdminController : ControllerBase
+    public class adminController : ControllerBase
     {
         // GET:  /ping
         [HttpGet("ping")]
