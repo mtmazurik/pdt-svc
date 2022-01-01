@@ -16,10 +16,16 @@ RUN dotnet build "pdt.svc.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "pdt.svc.csproj" -c Release -o /app/publish
 
+# takes the parms from the Github Action cmd line inside the action: docker/build-push-action@v2
+# and mounts theme from cmd line, into /run/secrets directory  (automagically)
+# we cat that out in a SH run command and necessarily 'export' so it is a linux shell value for the build container
 RUN --mount=type=secret,id=GOOGLE_CUSTOM_SEARCH_CX \
   --mount=type=secret,id=GOOGLE_CUSTOM_SEARCH_API_KEY \
-   export SearchEngine__GoogleCustomSearchCx=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_CX) && \
-   export SearchEngine__GoogleCustomSearchApiKey=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_API_KEY)
+   export GOOGLE_CUSTOM_SEARCH_CX=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_CX) && \
+   export GOOGLE_CUSTOM_SEARCH_API_KEY=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_API_KEY)
+# then for .NET; we set up ENV vars with double-underscores to override appsettings override, having added Configuration.AddEnvironmentVariables() to the builder in Program.cs\
+ENV SearchEngine__GoogleCustomSearchCx ${GOOGLE_CUSTOM_SEARCH_CX}
+ENV SearchEngine__GoogleCustomSearchApiKey ${GOOGLE_CUSTOM_SEARCH_API_KEY}
 
 FROM base AS final
 WORKDIR /app
