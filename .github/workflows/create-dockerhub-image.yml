@@ -3,7 +3,8 @@ name: Docker Image CI
 on:
   push:
     branches: [ main ]
-
+env:
+  APP_PATH: "./pdt.svc"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,3 +33,7 @@ jobs:
           file: ./pdt.svc/Dockerfile
           push: true
           tags: mtmazurik/pdt-svc:latest
+          secrets: |
+              "GOOGLE_CUSTOM_SEARCH_CX=${{ secrets.GOOGLE_CUSTOM_SEARCH_CX }}"
+              "GOOGLE_CUSTOM_SEARCH_API_KEY=${{ secrets.GOOGLE_CUSTOM_SEARCH_API_KEY}}"
+
