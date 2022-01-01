@@ -5,7 +5,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
 WORKDIR /src
 COPY ["pdt.svc/pdt.svc.csproj", "pdt.svc/"]
 RUN dotnet restore "pdt.svc/pdt.svc.csproj"
