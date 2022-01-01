@@ -18,9 +18,8 @@ RUN dotnet publish "pdt.svc.csproj" -c Release -o /app/publish
 
 RUN --mount=type=secret,id=GOOGLE_CUSTOM_SEARCH_CX \
   --mount=type=secret,id=GOOGLE_CUSTOM_SEARCH_API_KEY \
-   export GOOGLE_CUSTOM_SEARCH_CX=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_CX) && \
-   export GOOGLE_CUSTOM_SEARCH_API_KEY=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_API_KEY) && \
-   yarn gen
+   export SearchEngine:GoogleCustomSearchCx=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_CX) && \
+   export SearchEngine:GoogleCustomSearchApiKey=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_API_KEY)
 
 FROM base AS final
 WORKDIR /app
