@@ -25,8 +25,8 @@ RUN --mount=type=secret,id=GOOGLE_CUSTOM_SEARCH_CX \
    export GOOGLE_CUSTOM_SEARCH_CX=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_CX) && \
    export GOOGLE_CUSTOM_SEARCH_API_KEY=$(cat /run/secrets/GOOGLE_CUSTOM_SEARCH_API_KEY)
 # then for .NET; we set up ENV vars with double-underscores to override appsettings override, having added Configuration.AddEnvironmentVariables() to the builder in Program.cs\
-ENV SearchEngine__GoogleCustomSearchCx ${GOOGLE_CUSTOM_SEARCH_CX}
-ENV SearchEngine__GoogleCustomSearchApiKey ${GOOGLE_CUSTOM_SEARCH_API_KEY}
+ENV SearchEngine__GoogleCustomSearchCx=$GOOGLE_CUSTOM_SEARCH_CX
+ENV SearchEngine__GoogleCustomSearchApiKey=$GOOGLE_CUSTOM_SEARCH_API_KEY
 
 WORKDIR /app
 COPY --from=publish /app/publish .
