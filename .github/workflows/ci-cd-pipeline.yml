@@ -68,7 +68,7 @@ jobs:
       run: |-
         docker pull ${{ env.DOCKERHUB_IMAGE }}
         docker tag ${{ env.DOCKERHUB_IMAGE }} ${{ env.ARTIFACT_REGISTRY_IMAGE }}
-        docker-credential-gcr configure-docker --registries=${{ env.ARTIFACT_REGISTRY }} 
+        gcloud docker-credential-gcr configure-docker --registries=${{ env.ARTIFACT_REGISTRY }}  # credential helper points to the Artifact registry 
         docker push ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         
   deploy:
