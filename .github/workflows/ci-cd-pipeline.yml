@@ -20,6 +20,7 @@ env:
   APP_PATH: './pdt.svc'
   SERVICE: 'pdt-svc'
   REGION: 'us-west1'
+  PROJECT: 'cloud-run-project-01'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   ARTIFACT_REGISTRY: 'us-west1-docker-pkg.dev'
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker-pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
@@ -41,7 +42,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v2                       # first push into DockerHub
         with:
           file: ${{ env.APP_PATH }}/Dockerfile
           push: true
@@ -52,16 +53,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Auth
-      uses: google-github-actions/auth@v0               
+ #   - name: Auth
+ #     uses: google-github-actions/auth@v0               
+ #     with:
+ #       credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
+    -name: Auth
+      uses: google-github-actions/setup-gcloud@master
       with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
+        service_account_key: ${{ secrets.GCP_CREDENTIALS_JSON }}
+        project_id: ${{ env.PROJECT }}
+        export_default_credentials: true
 
     - name: Configure GCP Docker Client
       run: |-
+        gcloud auth configure-docker --quiet
         gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY}} --quiet
 
-    - name: Push to Artifact registry
+    - name: Pull&Push to Artifact registry
       run: |-
         docker pull ${{ env.DOCKERHUB_IMAGE }}
         docker tag ${{ env.DOCKERHUB_IMAGE }} ${{ env.ARTIFACT_REGISTRY_IMAGE }}
