@@ -16,7 +16,6 @@ on:
     branches: [ main ]
 name: CI/CD Pipeline for pdt-svc # REST API svc; builds a Docker image -> DockerHub, deploys to GCP Cloud Run (host) service with App secrets-> env vars for code use
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
   SERVICE: 'pdt-svc'
   REGION: 'us-west1'
   APP_PATH: './pdt.svc'
@@ -46,20 +45,23 @@ jobs:
     needs: build                                        # depends on:   build step successfully completes;  deploy job will not run concurrently
     runs-on: ubuntu-latest
     steps:
-    - name: Setup Cloud SDK     
-      uses: google-github-actions/setup-gcloud@v0       # NOTE: not using other GitHub Action -  google-github-action/deploy-cloudrun@v0
+    - name: Authenticate to Google Cloud    
+      uses: google-github-actions/auth@v0               # NOTE: not using the alternative GitHub Action -  google-github-action/deploy-cloudrun@v0
       with:
-        project_id: ${{ env.PROJECT_ID }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}  # private-key of the service account we created in GCP 
-        export_default_credentials: true                # Set to true to authenticate the Cloud Run action
-    - name: Deploy to Cloud Run
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}  # contains the private-key & project id - file exported from KEYS on our Service Account 
+
+    - name: Setup gcloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
+    - id: 'gcloud'
+      name: gcloud cmd line deploy cloud run image
       run: |-
         gcloud run deploy {{ env.SERVICE }} \
         --region ${{ env.REGION }} \
         --image ${{ env.DOCKER_IMAGE }} \
-        --platform 'managed' \                          # env vars for App secrets passed in, can be anything, db connections, etc.
-        --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.GOOGLE_CUSTOM_SEARCH_CX }} \          # tip from: https://ahmet.im/blog/mastering-cloud-run-environment-variables/
-        --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.GOOGLE_CUSTOM_SEARCH_API_KEY }} \ # double-underscore is a .NET AppSettings.json overried thing
+        --platform 'managed' \                          
+        --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }} \             # tip from: https://ahmet.im/blog/mastering-cloud-run-environment-variables/
+        --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }} \    # double-underscore is a .NET AppSettings.json overried thing
         --quiet
 
 
