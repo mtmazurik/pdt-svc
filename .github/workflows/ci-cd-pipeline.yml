@@ -56,7 +56,7 @@ jobs:
     - id: 'gcloud'
       name: gcloud cmd line deploy cloud run image
       run: |-
-        gcloud run deploy {{ env.SERVICE }} \
+        gcloud run deploy ${{ env.SERVICE }} \
         --region ${{ env.REGION }} \
         --image ${{ env.DOCKER_IMAGE }} \
         --platform 'managed' \                          
