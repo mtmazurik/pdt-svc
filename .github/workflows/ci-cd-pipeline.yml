@@ -24,7 +24,6 @@ env:
   VERSION: 'latest'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   ARTIFACT_REGISTRY: 'us-west1-docker-pkg.dev'
-  ARTIFACT_REGISTRY_IMAGE: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}
 
 jobs:
   build:                        # pushes the docker image to DockerHub with "tags" value below, overwriting the previous  :latest   version
@@ -60,13 +59,14 @@ jobs:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
 
     - name: Configure GCP Docker Client
+      env: ARTIFACT_REGISTRY_IMAGE: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}
       run: |-
         gcloud auth configure docker ${{ env.ARTIFACT_REGISTRY}} --quiet
 
     - name: Push to Artifact registry
       run: |-
         docker pull ${{ env.DOCKERHUB_IMAGE }}
-        docker tag ${{ env.DOCKERHUB_IMAGE }} ${{ env.ARTIFACT_REGISTRY_IMAGE }}
+        docker tag ${{ env.DOCKERHUB_IMAGE }} ${{ ARTIFACT_REGISTRY_IMAGE }}
         docker push ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         
   deploy:
@@ -79,9 +79,10 @@ jobs:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
 
     - name: Deploy image to Cloud Run
+      env:  ARTIFACT_REGISTRY_IMAGE: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}
       uses: google-github-actions/deploy-cloudrun@v0
       with:
         service: ${{ env.SERVICE }}
-        image: ${{ env.ARTIFACT_REGISTRY_IMAGE }}
+        image: ${{ ARTIFACT_REGISTRY_IMAGE }}
         env_vars: SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }}, \
                   SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }}
