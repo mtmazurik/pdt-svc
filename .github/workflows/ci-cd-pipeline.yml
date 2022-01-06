@@ -20,12 +20,9 @@ env:
   APP_PATH: './pdt.svc'
   SERVICE: 'pdt-svc'
   REGION: 'us-west1'
-  PROJECT: 'cloud-run-project-01'
-  VERSION: 'latest'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   ARTIFACT_REGISTRY: 'us-west1-docker-pkg.dev'
-  ARTIFACT_REGISTRY_IMAGE: us-west1-docker-pkg.dev/cloud-run-project-01/pdt-svc:latest
-#  ARTIFACT_REGISTRY_IMAGE: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}  bug! not working - in jobs (below) in the workflow
+  ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker-pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
 jobs:
   build:                        # pushes the docker image to DockerHub with "tags" value below, overwriting the previous  :latest   version
     runs-on: ubuntu-latest
