@@ -14,12 +14,18 @@
 on:
   push:
     branches: [ main ]
+
 name: CI/CD Pipeline for pdt-svc # REST API svc; builds a Docker image -> DockerHub, deploys to GCP Cloud Run (host) service with App secrets-> env vars for code use
 env:
   SERVICE: 'pdt-svc'
   REGION: 'us-west1'
+  PROJECT: 'cloud-run-project-01'
   APP_PATH: './pdt.svc'
-  DOCKER_IMAGE: 'mtmazurik/pdt-svc:latest'
+  VERSION: 'latest'
+  DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
+  ARTIFACT_REGISTRY: 'us-west1-docker-pkg.dev'
+  ARTIFACT_REGISTRY_IMAGE: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}
+
 jobs:
   build:                        # pushes the docker image to DockerHub with "tags" value below, overwriting the previous  :latest   version
     runs-on: ubuntu-latest
@@ -27,40 +33,54 @@ jobs:
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Build and push
-        id: docker_build
         uses: docker/build-push-action@v2
         with:
           file: ${{ env.APP_PATH }}/Dockerfile
           push: true
-          tags: ${{ env.DOCKER_IMAGE }}
-  deploy:
-    needs: build                                        # depends on:   build step successfully completes;  deploy job will not run concurrently
+          tags: ${{ env.DOCKERHUB_IMAGE }},${{ env.ARTIFACT_REGISTRY_IMAGE}} 
+
+  push:
+    needs: build                                                # depends on: build step
     runs-on: ubuntu-latest
     steps:
-    - id: auth
+    - name: Auth
       uses: google-github-actions/auth@v0               
       with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}  # contains the private-key & project id 
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
 
-    - id: deploy
+    - name: Configure GCP Docker Client
+      run: |-
+        gcloud auth configure docker ${{ env.ARTIFACT_REGISTRY}} --quiet
+
+    - name: Push to Artifact registry
+        docker pull ${{ env.DOCKERHUB_IMAGE }}
+        docker tag ${{ env.DOCKERHUB_IMAGE }} ${{ env.ARTIFACT_REGISTRY_IMAGE }}
+        docker push ${{ env.ARTIFACT_REGISTRY_IMAGE }}
+        
+  deploy:
+    needs: push                                                 # depends on:   push step 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Auth
+      uses: google-github-actions/auth@v0               
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
+
+    - name: Deploy image to Cloud Run
       uses: google-github-actions/deploy-cloudrun@v0
       with:
         service: ${{ env.SERVICE }}
-        image: ${{ env.DOCKER_IMAGE }}
+        image: ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         env_vars: SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }}, \
                   SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }}
-
-     # run: |-
-     #   gcloud run deploy ${{ env.SERVICE }} \
-     #   --region ${{ env.REGION }} \
-     #   --image ${{ env.DOCKER_IMAGE }} \                        
-     #   --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }} \
-     #   --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }}
