@@ -60,7 +60,7 @@ jobs:
 
     - name: Configure GCP Docker Client
       env: 
-        ARTIFACT_REGISTRY_IMAGE : ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}
+        ARTIFACT_REGISTRY_IMAGE: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}
       run: |-
         gcloud auth configure docker ${{ env.ARTIFACT_REGISTRY}} --quiet
 
@@ -81,7 +81,7 @@ jobs:
 
     - name: Deploy image to Cloud Run
       env:  
-        ARTIFACT_REGISTRY_IMAGE : ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}
+        ARTIFACT_REGISTRY_IMAGE: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT }}/${{ env.SERVICE }}:${{ env.VERSION }}
       uses: google-github-actions/deploy-cloudrun@v0
       with:
         service: ${{ env.SERVICE }}
