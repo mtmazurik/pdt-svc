@@ -55,11 +55,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Auth
-      uses: google-github-actions/setup-gcloud@v0
+      uses: google-github-actions/auth@v0               
       with:
-        service_account_key: ${{ secrets.GCP_CREDENTIALS_JSON }}
-        project_id: ${{ env.PROJECT }}
-        export_default_credentials: true
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
 
     - name: Configure GCP Docker Client
       run: |-
