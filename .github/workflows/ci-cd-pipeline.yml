@@ -83,5 +83,5 @@ jobs:
         service: ${{ env.SERVICE }}
         image: ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         env_vars: Env_Secrets__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }}, \
-                  Env_Secrets__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY, \
+                  Env_Secrets__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY}}, \
                   Env_SearchEngine__SearchResultsMax= ${{ env.APP_SEARCH_RESULTS_MAX }}
