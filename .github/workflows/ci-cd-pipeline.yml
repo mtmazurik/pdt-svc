@@ -52,12 +52,7 @@ jobs:
     needs: build                                                # depends on: build step
     runs-on: ubuntu-latest
     steps:
-
- #   - name: Auth
- #     uses: google-github-actions/auth@v0               
- #     with:
- #       credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
-    -name: Auth
+    - name: Auth
       uses: google-github-actions/setup-gcloud@v0
       with:
         service_account_key: ${{ secrets.GCP_CREDENTIALS_JSON }}
