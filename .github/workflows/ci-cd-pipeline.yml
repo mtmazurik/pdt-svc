@@ -64,6 +64,7 @@ jobs:
         gcloud auth configure docker ${{ env.ARTIFACT_REGISTRY}} --quiet
 
     - name: Push to Artifact registry
+      run: |-
         docker pull ${{ env.DOCKERHUB_IMAGE }}
         docker tag ${{ env.DOCKERHUB_IMAGE }} ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         docker push ${{ env.ARTIFACT_REGISTRY_IMAGE }}
