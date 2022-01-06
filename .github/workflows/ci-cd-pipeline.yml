@@ -58,10 +58,6 @@ jobs:
       run: |-
         gcloud run deploy ${{ env.SERVICE }} \
         --region ${{ env.REGION }} \
-        --image ${{ env.DOCKER_IMAGE }} \
-        --platform 'managed' \                          
-        --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }} \             # tip from: https://ahmet.im/blog/mastering-cloud-run-environment-variables/
-        --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }} \    # double-underscore is a .NET AppSettings.json overried thing
-        --quiet
-
-
+        --image ${{ env.DOCKER_IMAGE }} \                        
+        --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }} \
+        --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }}
