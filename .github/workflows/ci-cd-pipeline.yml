@@ -23,7 +23,6 @@ env:
   PROJECT: 'cloud-run-project-01'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   ARTIFACT_REGISTRY: 'us-west1-docker.pkg.dev'      # this is terrible,  D.R.Y. issue with the Artifact Registry pathing - need localized env vars to work  !bug: may not be working for job-local env vars yet, re-test
-  DOCKER_REPOSITORY: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc'
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
   
 jobs:
@@ -44,14 +43,14 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2                       # first push into DockerHub
+        uses: docker/build-push-action@v2                       
         with:
           file: ${{ env.APP_PATH }}/Dockerfile
           push: true
           tags: ${{ env.DOCKERHUB_IMAGE }}
 
-  push:
-    needs: build                                                # depends on: build step
+  pullandpush:
+    needs: build                                                
     runs-on: ubuntu-latest
     steps:
     - name: Auth
@@ -61,8 +60,7 @@ jobs:
 
     - name: Configure GCP Docker Client
       run: |-
-        gcloud auth configure-docker --quiet
-        gcloud auth configure-docker ${{ env.DOCKER_REPOSITORY}} --quiet
+        gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }} --quiet
 
     - name: Pull Push to Artifact registry
       run: |-
@@ -71,7 +69,7 @@ jobs:
         docker push ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         
   deploy:
-    needs: push                                                 # depends on:   push step 
+    needs: pullandpush                                          
     runs-on: ubuntu-latest
     steps:
     - name: Auth
