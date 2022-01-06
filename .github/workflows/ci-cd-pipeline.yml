@@ -45,7 +45,8 @@ jobs:
       - name: Build then Push to DockerHub
         uses: docker/build-push-action@v2                       
         with:
-          context: ./pdt.svc    # where Dockerfile lives
+          context: .
+          file: ./pdt.svc/Dockerfile
           push: true
           tags: ${{ env.DOCKERHUB_IMAGE }}
 
