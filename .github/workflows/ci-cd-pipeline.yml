@@ -62,7 +62,7 @@ jobs:
 
     - name: Configure GCP Docker Client
       run: |-
-        gcloud auth configure docker ${{ env.ARTIFACT_REGISTRY}} --quiet
+        gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY}} --quiet
 
     - name: Push to Artifact registry
       run: |-
