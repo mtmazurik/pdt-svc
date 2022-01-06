@@ -45,19 +45,22 @@ jobs:
     needs: build                                        # depends on:   build step successfully completes;  deploy job will not run concurrently
     runs-on: ubuntu-latest
     steps:
-    - name: Authenticate to Google Cloud    
-      uses: google-github-actions/auth@v0               # NOTE: not using the alternative GitHub Action -  google-github-action/deploy-cloudrun@v0
+    - id: auth
+      uses: google-github-actions/auth@v0               
       with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}  # contains the private-key & project id - file exported from KEYS on our Service Account 
+        credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}  # contains the private-key & project id 
 
-    - name: Setup gcloud SDK
-      uses: google-github-actions/setup-gcloud@v0
+    - id: deploy
+      uses: google-github-actions/deploy-cloudrun@v0
+      with:
+        service: ${{ env.SERVICE }}
+        image: ${{ env.DOCKER_IMAGE }}
+        env_vars: SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }}, \
+                  SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }}
 
-    - id: 'gcloud'
-      name: gcloud cmd line deploy cloud run image
-      run: |-
-        gcloud run deploy ${{ env.SERVICE }} \
-        --region ${{ env.REGION }} \
-        --image ${{ env.DOCKER_IMAGE }} \                        
-        --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }} \
-        --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }}
+     # run: |-
+     #   gcloud run deploy ${{ env.SERVICE }} \
+     #   --region ${{ env.REGION }} \
+     #   --image ${{ env.DOCKER_IMAGE }} \                        
+     #   --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }} \
+     #   --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }}
