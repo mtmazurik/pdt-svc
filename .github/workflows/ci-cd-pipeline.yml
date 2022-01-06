@@ -23,6 +23,7 @@ env:
   PROJECT: 'cloud-run-project-01'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   ARTIFACT_REGISTRY: 'us-west1-docker-pkg.dev'
+  DOCKER_REPOSITORY: 'us-west1-docker-pkg.dev/cloud-run-project-01/pdt-svc'
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker-pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
 jobs:
   build:                        # pushes the docker image to DockerHub with "tags" value below, overwriting the previous  :latest   version
@@ -62,13 +63,13 @@ jobs:
     - name: Configure GCP Docker Client
       run: |-
         gcloud auth configure-docker --quiet
-        gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY}} --quiet
+        gcloud auth configure-docker ${{ env.DOCKER_REPOSITORY}} --quiet
 
     - name: Pull&Push to Artifact registry
       run: |-
         docker pull ${{ env.DOCKERHUB_IMAGE }}
         docker tag ${{ env.DOCKERHUB_IMAGE }} ${{ env.ARTIFACT_REGISTRY_IMAGE }}
-        gcloud docker-credential-gcr configure-docker --registries=${{ env.ARTIFACT_REGISTRY }}  # credential helper points to the Artifact registry 
+#        gcloud docker-credential-gcr configure-docker --registries=${{ env.ARTIFACT_REGISTRY }}  # credential helper points to the Artifact registry 
         docker push ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         
   deploy:
