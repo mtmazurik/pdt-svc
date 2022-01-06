@@ -14,16 +14,13 @@
 on:
   push:
     branches: [ main ]
-
-
 name: CI/CD Pipeline for pdt-svc # REST API svc; builds a Docker image -> DockerHub, deploys to GCP Cloud Run (host) service with App secrets-> env vars for code use
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
-  SERVICE: pdt-svc
-  REGION: us-west1
-  APP_PATH: "./pdt.svc"
+  SERVICE: 'pdt-svc'
+  REGION: 'us-west1'
+  APP_PATH: './pdt.svc'
   DOCKER_IMAGE: 'mtmazurik/pdt-svc:latest'
-
 jobs:
   build:                        # pushes the docker image to DockerHub with "tags" value below, overwriting the previous  :latest   version
     runs-on: ubuntu-latest
@@ -60,7 +57,7 @@ jobs:
         gcloud run deploy {{ env.SERVICE }} \
         --region ${{ env.REGION }} \
         --image ${{ DOCKER_IMAGE }} \
-        --platform "managed" \                          # env vars for App secrets passed in, can be anything, db connections, etc.
+        --platform 'managed' \                          # env vars for App secrets passed in, can be anything, db connections, etc.
         --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.GOOGLE_CUSTOM_SEARCH_CX }} \          # tip from: https://ahmet.im/blog/mastering-cloud-run-environment-variables/
         --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.GOOGLE_CUSTOM_SEARCH_API_KEY }} \ # double-underscore is a .NET AppSettings.json overried thing
         --quiet
