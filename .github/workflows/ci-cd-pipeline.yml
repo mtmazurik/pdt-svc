@@ -22,8 +22,8 @@ env:
   REGION: 'us-west1'
   PROJECT: 'cloud-run-project-01'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
-  ARTIFACT_REGISTRY: 'us-west1-docker-pkg.dev'
-  DOCKER_REPOSITORY: 'us-west1-docker-pkg.dev/cloud-run-project-01/pdt-svc'
+  ARTIFACT_REGISTRY: 'us-west1-docker.pkg.dev'      # this is terrible,  D.R.Y. issue with the Artifact Registry pathing - need localized env vars to work  !bug: may not be working for job-local env vars yet, re-test
+  DOCKER_REPOSITORY: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc'
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
   
 jobs:
