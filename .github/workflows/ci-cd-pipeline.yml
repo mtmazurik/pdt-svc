@@ -24,7 +24,8 @@ env:
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   ARTIFACT_REGISTRY: 'us-west1-docker-pkg.dev'
   DOCKER_REPOSITORY: 'us-west1-docker-pkg.dev/cloud-run-project-01/pdt-svc'
-  ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker-pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
+  ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
+  
 jobs:
   build:                        # pushes the docker image to DockerHub with "tags" value below, overwriting the previous  :latest   version
     runs-on: ubuntu-latest
