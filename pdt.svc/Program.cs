@@ -1,7 +1,7 @@
 using pdt.svc.services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddEnvironmentVariables(prefix: "Env");
 
 // Add services to the container.
 

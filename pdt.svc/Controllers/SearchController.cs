@@ -26,8 +26,8 @@ namespace pdt_svc.Controllers
 
             try
             {
-                string cx = Configuration["SearchEngine:GoogleCustomSearchCx"].ToString();                  // read secrets in from appsettings or env vars during GitHub Actions
-                string apiKey = Configuration["SearchEngine:GoogleCustomSearchApiKey"].ToString();
+                string cx = Configuration["Secrets:GoogleCustomSearchCx"].ToString();                  // read secrets in from appsettings or env vars during GitHub Actions
+                string apiKey = Configuration["Seacrets:GoogleCustomSearchApiKey"].ToString();
                 string queryString = "https://www.googleapis.com/customsearch/v1"
                     + "?key=" + apiKey + "&cx=" + cx + "&q=" + term;
 
