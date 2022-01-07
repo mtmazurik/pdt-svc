@@ -16,6 +16,7 @@ RUN dotnet build "pdt.svc.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "pdt.svc.csproj" -c Release -o /app/publish
 
+FROM base as final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "pdt.svc.dll"]
