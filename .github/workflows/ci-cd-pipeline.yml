@@ -15,36 +15,35 @@ on:
   push:
     branches: [ main ]
 
-name: CI/CD Pipeline for pdt-svc # REST API svc; builds a Docker image -> DockerHub, deploys to GCP Cloud Run (host) service with App secrets-> env vars for code use
-env:
-  DOCKERFILE_PATH: './pdt.svc'                      # pipeline literals
-  SERVICE: 'pdt-svc'
-  REGION: 'us-west1'
-  PORT: '8081'
+name: CI/CD Pipeline for pdt-svc 
+env:                 
   PROJECT: 'cloud-run-project-01'
-  DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
-  ARTIFACT_REGISTRY: 'us-west1-docker.pkg.dev'      # this is terrible,  D.R.Y. issue with the Artifact Registry pathing - need localized env vars to work  !bug: may not be working for job-local env vars yet, re-test
+  SERVICE: 'pdt-svc'
+  PORT: '8081'
+  REGION: 'us-west1'
+  ARTIFACT_REGISTRY: 'us-west1-docker.pkg.dev'      
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
-  APP_SEARCH_RESULTS_MAX: 10                        # Start of: App-specific env literals
+  DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
+  DOCKERFILE_PATH: './pdt.svc'   
+  APP_SEARCH_RESULTS_MAX: 50                        
   
 jobs:
-  build:                        # pushes the docker image to DockerHub with "tags" value below, overwriting the previous  :latest   version
+  build:       # job: pushes the docker image with :latest tag
     runs-on: ubuntu-latest
-    environment: production     # placeholder; not using specific environs yet with our variables
     steps:
-      - name: Set up QEMU
+      - name: Set up QEMU hypervisor
         uses: docker/setup-qemu-action@v1
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx (BuildKit engine)
         uses: docker/setup-buildx-action@v1
 
-      - name: Login to DockerHub
+      - name: Log on to DockerHub
         uses: docker/login-action@v1 
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build then Push image
+      - name: Build image to DockerHub
         id: docker_build
         uses: docker/build-push-action@v2                       
         with:
@@ -52,7 +51,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_IMAGE }}
 
-  pullandpush:
+  pullandpush:  # job: get image from DockerHub to Artifact Registry / Docker repo (called: pdt-svc )
     needs: build                                                
     runs-on: ubuntu-latest
     steps:
@@ -71,7 +70,7 @@ jobs:
         docker tag ${{ env.DOCKERHUB_IMAGE }} ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         docker push ${{ env.ARTIFACT_REGISTRY_IMAGE }}
         
-  deploy:
+  deploy:   # job: Google Cloud Run deployment with secrets / env variables
     needs: pullandpush                                          
     runs-on: ubuntu-latest
     steps:
@@ -90,6 +89,6 @@ jobs:
         --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \  
         --port=${{ env.PORT }} \
         --allow-unauthenticated \
-        --set-env-vars=Env_Secrets__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }} \
-        --set-env-vars=Env_Secrets__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }} \
-        --set-env-vars=Env_SearchEngine__SearchResultsMax= ${{ env.APP_SEARCH_RESULTS_MAX }}
+        --set-env-vars=Env_Secrets__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }},\
+                       Env_Secrets__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }},\
+                       Env_SearchEngine__SearchResultsMax= ${{ env.APP_SEARCH_RESULTS_MAX }}
