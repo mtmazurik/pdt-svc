@@ -20,6 +20,7 @@ env:
   DOCKERFILE_PATH: './pdt.svc'                      # pipeline literals
   SERVICE: 'pdt-svc'
   REGION: 'us-west1'
+  PORT: '8081'
   PROJECT: 'cloud-run-project-01'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   ARTIFACT_REGISTRY: 'us-west1-docker.pkg.dev'      # this is terrible,  D.R.Y. issue with the Artifact Registry pathing - need localized env vars to work  !bug: may not be working for job-local env vars yet, re-test
@@ -79,11 +80,24 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
 
+    - name: Setup Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+
     - name: Deploy image to Cloud Run
-      uses: google-github-actions/deploy-cloudrun@v0
-      with:
-        service: ${{ env.SERVICE }}
-        image: ${{ env.ARTIFACT_REGISTRY_IMAGE }}
-        env_vars: Env_Secrets__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }}, \
-                  Env_Secrets__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY}}, \
-                  Env_SearchEngine__SearchResultsMax= ${{ env.APP_SEARCH_RESULTS_MAX }}
+      run: |-
+        gcloud run deploy ${{ env.SERVICE }} \
+        --region ${{ env.REGION }} \
+        --image ${{ env.ARTIFACT_REGISTRY_IMAGE }} \  
+        --port ${{ env.PORT }} \
+        --allow-unauthenticated \
+        --set-env-vars SearchEngine__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }} \
+        --set-env-vars SearchEngine__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }}
+
+#      uses: google-github-actions/deploy-cloudrun@v0
+#      with:
+#        service: ${{ env.SERVICE }}
+#        image: ${{ env.ARTIFACT_REGISTRY_IMAGE }}
+#        metadata: 
+#        env_vars: Env_Secrets__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }}, \
+#                  Env_Secrets__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY}}, \
+#                  Env_SearchEngine__SearchResultsMax= ${{ env.APP_SEARCH_RESULTS_MAX }}
