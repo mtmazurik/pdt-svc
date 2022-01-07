@@ -79,16 +79,16 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
  
-    - name: Setup Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0
+ #   - name: Setup Google Cloud SDK
+ #     uses: google-github-actions/setup-gcloud@v0
 
     - name: Get from Secret Manager service   # pre-req: referenced secrets setup, in Secret Manager instance in GCloud project (see, https://github.com/google-github-actions/get-secretmanager-secrets )
       id: 'secrets'
       uses: 'google-github-actions/get-secretmanager-secrets@v0'
       with:
         secrets: |-
-          CX:${{ env.PROJECT }}/APP_GOOGLE_SEARCH_CX, \    #  token:{project}/{secretName}
-          API_KEY:${{ env.PROJECT }}/APP_GOOGLE_SEARCH_API_KEY
+          CX:cloud-run-project-01/APP_GOOGLE_SEARCH_CX #,/    #  token:{project}/{secretName} oh boy!   This who action may be suspect, read here: https://github.com/google-github-actions/get-secretmanager-secrets
+        # API_KEY:cloud-run-project-01/APP_GOOGLE_SEARCH_API_KEY   # i'm having the same issue!
 
     - name: Deploy image to Cloud Run
       run: |-
