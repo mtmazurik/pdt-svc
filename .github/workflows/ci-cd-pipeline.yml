@@ -78,9 +78,17 @@ jobs:
       uses: google-github-actions/auth@v0               
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
-
+ 
     - name: Setup Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v0
+
+    - name: Get from Secret Manager service   # pre-req: referenced secrets setup, in Secret Manager instance in GCloud project (see, https://github.com/google-github-actions/get-secretmanager-secrets )
+      id: 'secrets'
+      uses: 'google-github-actions/get-secretmanager-secrets@v0'
+      with:
+        secrets: |-
+          CX:${{ env.PROJECT }}/APP_GOOGLE_SEARCH_CX, \    #  token:{project}/{secretName}
+          API_KEY:${{ env.PROJECT }}/APP_GOOGLE_SEARCH_API_KEY
 
     - name: Deploy image to Cloud Run
       run: |-
@@ -89,6 +97,6 @@ jobs:
         --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \  
         --port=${{ env.PORT }} \
         --allow-unauthenticated \
-        --set-env-vars=Env_Secrets__GoogleCustomSearchCx=${{ secrets.APP_GOOGLE_SEARCH_CX }},\
-                       Env_Secrets__GoogleCustomSearchApiKey=${{ secrets.APP_GOOGLE_SEARCH_API_KEY }},\
+        --set-env-vars=Env_Secrets__GoogleCustomSearchCx=${{ steps.secrets.output.CX }},\  
+                       Env_Secrets__GoogleCustomSearchApiKey=${{ steps.secrets.output.API_KEY }},\
                        Env_SearchEngine__SearchResultsMax= ${{ env.APP_SEARCH_RESULTS_MAX }}
