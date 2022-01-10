@@ -19,14 +19,15 @@ name: CI/CD Pipeline for pdt-svc
 env:                 
   PROJECT: 'cloud-run-project-01'
   SERVICE: 'pdt-svc'
-  PORT: '8081'
   REGION: 'us-west1'
   ARTIFACT_REGISTRY: 'us-west1-docker.pkg.dev'      
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
-  DOCKERFILE_PATH: './pdt.svc'   
+  DOCKERFILE_PATH: './pdt.svc' 
+  APP_SEARCH_RESULATS_MAX_LABEL: 'Env_SearchEngine__SearchResultsMax'
   APP_SEARCH_RESULTS_MAX: 50                        
-  
+  APP_SECRETS: 'KEY1=APP_GOOGLE_SEARCH_API_KEY:latest,KEY2=APP_GOOGLE_SEARCH_CX:latest'
+
 jobs:
   build:       # job: pushes the docker image with :latest tag
     runs-on: ubuntu-latest
@@ -90,9 +91,19 @@ jobs:
           CX:cloud-run-project-01/APP_GOOGLE_SEARCH_CX
 
     - name: Deploy image to Cloud Run
-      run: |-
-        gcloud run deploy ${{ env.SERVICE }} \
-        --region=${{ env.REGION }} \
-        --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \  
-        --port=${{ env.PORT }} \
-        --set-env-vars=Env_SearchEngine__SearchResultsMax=${{ env.APP_SEARCH_RESULTS_MAX }}
+      uses: 'google-github-actions/deploy-cloudrun@v0'
+      with:
+        service: ${{ env.service }}
+        image: ${{ env.ARTIFACT_REGISTRY_IMAGE }}
+        env_vars: '${{ env.APP_SEARCH_RESULTS_MAX_LABEL }}=${{ env.APP_SEARCH_RESULTS_MAX }}'
+        secrets: '${{ env.APP_SECRETS }}'
+
+
+
+
+
+#      run: |-
+#        gcloud run deploy ${{ env.SERVICE }} \
+#        --region=${{ env.REGION }} \
+#        --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \  
+#        --set-env-vars=Env_SearchEngine__SearchResultsMax=${{ env.APP_SEARCH_RESULTS_MAX }}
