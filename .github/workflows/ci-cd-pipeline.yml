@@ -96,6 +96,4 @@ jobs:
         --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \  
         --port=${{ env.PORT }} \
         --allow-unauthenticated \
-        --set-env-vars=Env_Secrets__GoogleCustomSearchCx=${{ steps.secrets.output.CX }},\  
-                       Env_Secrets__GoogleCustomSearchApiKey=${{ steps.secrets.output.API_KEY }},\
-                       Env_SearchEngine__SearchResultsMax= ${{ env.APP_SEARCH_RESULTS_MAX }}
+        --set-env-vars= Env_SearchEngine__SearchResultsMax= ${{ env.APP_SEARCH_RESULTS_MAX }}
