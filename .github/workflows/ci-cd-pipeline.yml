@@ -24,7 +24,7 @@ env:
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   DOCKERFILE_PATH: './pdt.svc' 
-  APP_SEARCH_RESULATS_MAX_LABEL: 'Env_SearchEngine__SearchResultsMax'
+  APP_SEARCH_RESULTS_MAX_LABEL: 'Env_SearchEngine__SearchResultsMax'
   APP_SEARCH_RESULTS_MAX: 50                        
   APP_SECRETS: 'KEY1=APP_GOOGLE_SEARCH_API_KEY:latest,KEY2=APP_GOOGLE_SEARCH_CX:latest'
 
