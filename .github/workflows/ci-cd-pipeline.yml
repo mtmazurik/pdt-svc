@@ -94,5 +94,4 @@ jobs:
       run: |-
         gcloud run deploy ${{ env.SERVICE }} \
         --region=${{ env.REGION }} \
-        --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \  
-        --set-env-vars=Env_SearchEngine__SearchResultsMax=${{ env.APP_SEARCH_RESULTS_MAX }}
+        --image=${{ env.ARTIFACT_REGISTRY_IMAGE }}
