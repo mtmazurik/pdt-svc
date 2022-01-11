@@ -95,11 +95,5 @@ jobs:
         gcloud run deploy ${{ env.SERVICE }} \
         --region=${{ env.REGION }} \
         --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \  
-        --set-env-vars=Env_SearchEngine__SearchResultsMax=${{ env.APP_SEARCH_RESULTS_MAX }}
+        --set-env-vars=Env_SearchEngine__SearchResultsMax=${{ env.APP_SEARCH_RESULTS_MAX }} \
         --update-secrets=Env_Secrets__GoogleCustomSearchCx=APP_GOOGLE_SEARCH_CX:latest,Env_Secrets__GoogleCustomSearchApiKey=APP_GOOGLE_SEARCH_API_KEY:latest
-#      uses: 'google-github-actions/deploy#-cloudrun@v0'
-#      with:
-#        service: ${{ env.service }}
-#        image: ${{ env.ARTIFACT_REGISTRY_IMAGE }}
-#        env_vars: '${{ env.APP_SEARCH_RESULTS_MAX_LABEL }}=${{ env.APP_SEARCH_RESULTS_MAX }}'
-#        secrets: '${{ env.APP_SECRETS }}'
