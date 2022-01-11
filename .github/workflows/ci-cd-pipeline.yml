@@ -19,7 +19,7 @@ name: CI/CD Pipeline for pdt-svc
 env:                 
   PROJECT: 'cloud-run-project-01'
   SERVICE: 'pdt-svc'
-  PORT: 80
+  PORT: '80'
   REGION: 'us-west2'
   ARTIFACT_REGISTRY: 'us-west1-docker.pkg.dev'      
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
