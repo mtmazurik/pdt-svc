@@ -23,10 +23,9 @@ env:
   ARTIFACT_REGISTRY: 'us-west1-docker.pkg.dev'      
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
-  DOCKERFILE_PATH: './pdt.svc' 
-  APP_SEARCH_RESULTS_MAX_LABEL: 'Env_SearchEngine__SearchResultsMax'
-  APP_SEARCH_RESULTS_MAX: 50                        
+  DOCKERFILE_PATH: './pdt.svc'                   
   APP_SECRETS: 'KEY1=APP_GOOGLE_SEARCH_API_KEY:latest,KEY2=APP_GOOGLE_SEARCH_CX:latest'
+  APP_SEARCH_RESULTS_MAX: 50     
 
 jobs:
   build:       # job: pushes the docker image with :latest tag
@@ -80,18 +79,9 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}   
  
- #   - name: Setup Google Cloud SDK
- #     uses: google-github-actions/setup-gcloud@v0
-
-    - name: Get from Secret Manager service   # pre-req: referenced secrets setup, in Secret Manager instance in GCloud project (see, https://github.com/google-github-actions/get-secretmanager-secrets )
-      id: 'secrets'
-      uses: 'google-github-actions/get-secretmanager-secrets@v0'
-      with:
-        secrets: |-
-          CX:cloud-run-project-01/APP_GOOGLE_SEARCH_CX
-
     - name: Deploy image to Cloud Run
       run: |-
         gcloud run deploy ${{ env.SERVICE }} \
         --region=${{ env.REGION }} \
-        --image=${{ env.ARTIFACT_REGISTRY_IMAGE }}
+        --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \
+        --set-env-vars=Env_SearchEngine__SearchResultsMax=${{ env.APP_SEARCH_RESULTS_MAX }}
