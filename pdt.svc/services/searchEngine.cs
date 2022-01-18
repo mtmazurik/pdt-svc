@@ -20,15 +20,26 @@ namespace pdt.svc.services
         public string? Index { get; set; }
     }
 
-
     public class SearchEngine : ISearchEngine
     {
-        public List<SearchResult> Search(string queryString, int searchResultsMax = 50)
+        private int _maxResults;
+        private string _cx;
+        private string _apiKey;
+        public SearchEngine(int maxResults, string cx, string apiKey)   // ctor
+        {
+            _maxResults = maxResults;      // appsettings construction via injectsion, some settings
+            _cx = cx;
+            _apiKey = apiKey;
+        }
+        public List<SearchResult> Search(string querySubString)
         {
             var results = new List<SearchResult>();
 
+            string queryString = "https://www.googleapis.com/customsearch/v1"
+                + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + querySubString;
+
             string tenPerPageQueryString = "";
-            for (int i = 0; i < searchResultsMax; i = i + 10)
+            for (int i = 0; i < _maxResults; i = i + 10)
             {
 
 #pragma warning disable SYSLIB0014 // Type or member is obsolete
@@ -40,7 +51,7 @@ namespace pdt.svc.services
                 Stream s = response.GetResponseStream();
                 StreamReader r = new StreamReader(s);
                 string responseString = r.ReadToEnd();
-                dynamic jsonResponse = JsonConvert.DeserializeObject(responseString);
+                dynamic? jsonResponse = JsonConvert.DeserializeObject(responseString);
                 foreach (var item in jsonResponse.items)
                 {
                     results.Add(new SearchResult
