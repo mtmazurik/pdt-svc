@@ -32,7 +32,7 @@ namespace pdt.svc.tests
         [Test]
         public void SearchReturnsResults()
         {
-            List<SearchResult> searchResults = _searchEngine.Search("prize");
+            List<SearchResult> searchResults = _searchEngine.Search("prize drawing");
             if( searchResults.Count > 0) 
             { 
                 Assert.Pass();

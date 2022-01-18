@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 // builder.Services.AddDbContext(ApplicationDbContext>( options => options.UseSqlServer(connectionString));
 
 // .NET Core dependency injection
-builder.Services.AddTransient<ISearchEngine, SearchEngine>();
+//builder.Services.AddTransient<ISearchEngine, SearchEngine>();
 
 
 var app = builder.Build();
