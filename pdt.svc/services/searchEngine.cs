@@ -36,7 +36,7 @@ namespace pdt.svc.services
             var results = new List<SearchResult>();
 
             string queryString = "https://www.googleapis.com/customsearch/v1"
-                + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + querySubString;
+                + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + HttpUtility.UrlEncode(querySubString); ;
 
             string tenPerPageQueryString = "";
             for (int i = 0; i < _maxResults; i = i + 10)
