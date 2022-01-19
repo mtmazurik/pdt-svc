@@ -25,7 +25,7 @@ env:
   ARTIFACT_REGISTRY_IMAGE: 'us-west1-docker.pkg.dev/cloud-run-project-01/pdt-svc/pdt-svc:latest'
   DOCKERHUB_IMAGE: 'mtmazurik/pdt-svc:latest'
   DOCKERFILE_PATH: './pdt.svc'                   
-  APP_SEARCH_RESULTS_MAX: 50     
+  APP_SEARCH_RESULTS_MAX: 10     
 
 jobs:
   build:       # job: pushes the docker image with :latest tag
