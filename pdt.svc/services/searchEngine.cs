@@ -26,6 +26,7 @@ namespace pdt.svc.services
         private int _maxResults;
         private string _cx;
         private string _apiKey;
+        private string _queryString;
         public SearchEngine(int maxResults, string cx, string apiKey)   // ctor
         {
             _maxResults = maxResults;      // Object-Oriented: encapsulation-via-construction; needed App settings. Note: overrules injection as its complicated to inject parms, this'll be new 'ed
@@ -38,7 +39,7 @@ namespace pdt.svc.services
             {
                 var results = new List<SearchResult>();
 
-                string queryString = "https://www.googleapis.com/customsearch/v1"
+                _queryString = "https://www.googleapis.com/customsearch/v1"
                     + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + HttpUtility.UrlEncode(querySubString); ;
 
                 string tenPerQueryString = "";
@@ -46,7 +47,7 @@ namespace pdt.svc.services
                 {
 
 #pragma warning disable SYSLIB0014 // Type or member is obsolete
-                    tenPerQueryString = queryString + "&start=" + i;      // need to offset by 10 each iteration
+                    tenPerQueryString = _queryString + "&start=" + i;      // need to offset by 10 each iteration
                     var request = WebRequest.Create(tenPerQueryString);
 #pragma warning restore SYSLIB0014 // Type or member is obsolete
 
@@ -69,7 +70,7 @@ namespace pdt.svc.services
             }
             catch(Exception exc)
             {
-                throw new searchException("pdt.svc.services.searchengine.search error. querystring=" + queryString, exc );
+                throw new searchException("pdt.svc.services.searchengine.search error. querystring=" + _queryString, exc );
             }
         }
     }
