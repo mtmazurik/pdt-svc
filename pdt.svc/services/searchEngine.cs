@@ -37,10 +37,10 @@ namespace pdt.svc.services
             try
             {
                 var results = new List<SearchResult>();
-                throw new ApplicationException("funky cold medina");
+
                 string queryString = "https://www.googleapis.com/customsearch/v1"
                     + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + HttpUtility.UrlEncode(querySubString); ;
-
+throw new ApplicationException("funky cold medina");
                 string tenPerQueryString = "";
                 for (int i = 0; i < _maxResults; i = i + 10)
                 {
@@ -69,7 +69,7 @@ namespace pdt.svc.services
             }
             catch(Exception exc)
             {
-                throw new searchException("pdt.svc.services.searchengine.search error. querystring=" + querySubString, exc );
+                throw new searchException("pdt.svc.services.searchengine.search error. querystring=" + queryString, exc );
             }
         }
     }
