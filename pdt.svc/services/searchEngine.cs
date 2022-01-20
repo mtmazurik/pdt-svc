@@ -41,7 +41,7 @@ namespace pdt.svc.services
 
                 _queryString = "https://www.googleapis.com/customsearch/v1"
                     + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + HttpUtility.UrlEncode(querySubString); ;
-                throw new bogusException("bobo");
+
                 string tenPerQueryString = "";
                 for (int i = 0; i < _maxResults; i = i + 10)
                 {
