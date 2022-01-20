@@ -40,7 +40,7 @@ namespace pdt.svc.services
 
                 string queryString = "https://www.googleapis.com/customsearch/v1"
                     + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + HttpUtility.UrlEncode(querySubString); ;
-throw new ApplicationException("funky cold medina");
+
                 string tenPerQueryString = "";
                 for (int i = 0; i < _maxResults; i = i + 10)
                 {
