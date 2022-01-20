@@ -35,7 +35,7 @@ namespace pdt_svc.Controllers
             }
             catch(searchException exc) 
             {
-                _logger.LogError(exc.Message,exc.InnerException); // pattern: message from the service, innerexception of the caught (general) exception
+                _logger.LogError(exc.Message + Environment.NewLine + "innerException: " + exc.ToString()); // pattern: message from the service, innerexception of the caught (general) exception
                 return NoContent();
             }
         }
