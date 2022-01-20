@@ -5,7 +5,7 @@ using pdt.svc.services.exceptions;
 
 namespace pdt_svc.Controllers
 {
-    [Route("[controller]")]
+    [Route("search")]  
     [ApiController]
     public class searchController : ControllerBase
     {
@@ -23,8 +23,7 @@ namespace pdt_svc.Controllers
             _logger = logger;
         }
 
-        // GET:  /search?term={searchTerm}
-        [HttpGet("")]
+        [HttpGet("")]       // usage: /search?query=term+term1+term2     using UrlEncoding, "+" plus signs
         public IActionResult Get([FromQuery(Name = "query")]string queryString)
         {
 
