@@ -5,6 +5,7 @@ using System.Web;
 using System.Net;
 using Newtonsoft.Json;
 using System.IO;
+using pdt.svc.services.exceptions;
 
 
 namespace pdt.svc.services
@@ -27,42 +28,49 @@ namespace pdt.svc.services
         private string _apiKey;
         public SearchEngine(int maxResults, string cx, string apiKey)   // ctor
         {
-            _maxResults = maxResults;      // appsettings construction via injectsion, some settings
+            _maxResults = maxResults;      // Object-Oriented: encapsulation-via-construction; needed App settings. Note: overrules injection as its complicated to inject parms, this'll be new 'ed
             _cx = cx;
             _apiKey = apiKey;
         }
         public List<SearchResult> Search(string querySubString)
         {
-            var results = new List<SearchResult>();
-
-            string queryString = "https://www.googleapis.com/customsearch/v1"
-                + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + HttpUtility.UrlEncode(querySubString); ;
-
-            string tenPerPageQueryString = "";
-            for (int i = 0; i < _maxResults; i = i + 10)
+            try
             {
+                var results = new List<SearchResult>();
+                throw new ApplicationException("funky cold medina");
+                string queryString = "https://www.googleapis.com/customsearch/v1"
+                    + "?key=" + _apiKey + "&cx=" + _cx + "&q=" + HttpUtility.UrlEncode(querySubString); ;
+
+                string tenPerQueryString = "";
+                for (int i = 0; i < _maxResults; i = i + 10)
+                {
 
 #pragma warning disable SYSLIB0014 // Type or member is obsolete
-                tenPerPageQueryString = queryString + "&start=" + i;      // need to offset by i each iteration
-                var request = WebRequest.Create(tenPerPageQueryString);
+                    tenPerQueryString = queryString + "&start=" + i;      // need to offset by 10 each iteration
+                    var request = WebRequest.Create(tenPerQueryString);
 #pragma warning restore SYSLIB0014 // Type or member is obsolete
 
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                Stream s = response.GetResponseStream();
-                StreamReader r = new StreamReader(s);
-                string responseString = r.ReadToEnd();
-                dynamic? jsonResponse = JsonConvert.DeserializeObject(responseString);
-                foreach (var item in jsonResponse.items)
-                {
-                    results.Add(new SearchResult
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    Stream s = response.GetResponseStream();
+                    StreamReader r = new StreamReader(s);
+                    string responseString = r.ReadToEnd();
+                    dynamic? jsonResponse = JsonConvert.DeserializeObject(responseString);
+                    foreach (var item in jsonResponse.items)
                     {
-                        Title = item.title,
-                        Link = item.link,
-                        Snippet = item.snippet,
-                    });
+                        results.Add(new SearchResult
+                        {
+                            Title = item.title,
+                            Link = item.link,
+                            Snippet = item.snippet,
+                        });
+                    }
                 }
+                return results;
             }
-            return results;
+            catch(Exception exc)
+            {
+                throw new searchException("pdt.svc.services.searchengine.search error. querystring=" + querySubString, exc );
+            }
         }
     }
 }

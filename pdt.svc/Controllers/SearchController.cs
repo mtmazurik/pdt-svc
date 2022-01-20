@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using pdt.svc.services;
+using pdt.svc.services.exceptions;
 
 namespace pdt_svc.Controllers
 {
@@ -30,12 +31,11 @@ namespace pdt_svc.Controllers
             try
             {
                 List<SearchResult> results = _engine.Search(queryString);
-                _logger.LogInformation("pdt.svc /search API called, with queryString: " + queryString);
                 return Ok(results);
             }
-            catch 
+            catch(searchException exc) 
             {
-
+                _logger.LogError(exc.Message,exc.InnerException); // pattern: message from the service, innerexception of the caught (general) exception
                 return NoContent();
             }
         }
