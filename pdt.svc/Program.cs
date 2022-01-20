@@ -1,6 +1,9 @@
 using pdt.svc.services;
+using Google.Cloud.Diagnostics.Common;
+
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddGoogle(new LoggingServiceOptions { ProjectId = "cloud-run-project-01" });  // .net 6 function methodology
 builder.Configuration.AddEnvironmentVariables(prefix: "Env_");
 
 // Add services to the container.

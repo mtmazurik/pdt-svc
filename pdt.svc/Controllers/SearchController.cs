@@ -9,14 +9,17 @@ namespace pdt_svc.Controllers
     public class searchController : ControllerBase
     {
         ISearchEngine? _engine;
+        ILogger _logger;
 
-        public searchController(IConfiguration config)            // ctor
+        public searchController(  IConfiguration config
+                                , ILogger<searchController> logger)
         {
-            string cx = config["Secrets:GoogleCustomSearchCx"].ToString();                  // read secrets in from appsettings or env vars during GitHub Actions
+            string cx = config["Secrets:GoogleCustomSearchCx"].ToString();   // read AppSettings: secrets & settings passed from ENV vars
             string apiKey = config["Secrets:GoogleCustomSearchApiKey"].ToString();
             int maxResults = Convert.ToInt32(config["SearchEngine:SearchResultsMax"].ToString());
-            _engine = new SearchEngine(maxResults, cx, apiKey);   // more convenient to NOT USE DI here, for parameterized constructors - other patterns, like C#/.Net options pattern is convoluted further; blech, yuk:   more here : https://stackoverflow.com/questions/53884417/net-core-di-ways-of-passing-parameters-to-constructor
-                                                                  // don't thing the 'juice is worth the squeeze on this', use good ole 'new'
+
+            _engine = new SearchEngine(maxResults, cx, apiKey);   // NOT using DI here; then easily create constructor w/ ENV params
+            _logger = logger;
         }
 
         // GET:  /search?term={searchTerm}
@@ -27,6 +30,7 @@ namespace pdt_svc.Controllers
             try
             {
                 List<SearchResult> results = _engine.Search(queryString);
+                _logger.LogInformation("pdt.svc /search API called, with queryString: " + queryString);
                 return Ok(results);
             }
             catch 
