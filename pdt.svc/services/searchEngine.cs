@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using System.IO;
 using pdt.svc.services.exceptions;
 
-
 namespace pdt.svc.services
 {
 
@@ -27,11 +26,14 @@ namespace pdt.svc.services
         private string _cx;
         private string _apiKey;
         private string _queryString;
-        public SearchEngine(int maxResults, string cx, string apiKey)   // ctor
+        private IMessageProducer? _messageProducer;
+
+        public SearchEngine(int maxResults, string cx, string apiKey, IMessageProducer? messageProducer = null )   // ctor
         {
             _maxResults = maxResults;      // Object-Oriented: encapsulation-via-construction; needed App settings. Note: overrules injection as its complicated to inject parms, this'll be new 'ed
             _cx = cx;
             _apiKey = apiKey;
+            _messageProducer = messageProducer;
         }
         public List<SearchResult> Search(string querySubString)
         {
@@ -58,17 +60,23 @@ namespace pdt.svc.services
                     dynamic? jsonResponse = JsonConvert.DeserializeObject(responseString);
                     foreach (var item in jsonResponse.items)
                     {
-                        results.Add(new SearchResult
+
+                        SearchResult sr = new SearchResult
                         {
                             Title = item.title,
                             Link = item.link,
                             Snippet = item.snippet,
-                        });
+                        };
+                        results.Add(sr);
+                        if( _messageProducer != null)
+                        { 
+                            _messageProducer.Write(JsonConvert.SerializeObject(sr));  // push each search result to kafka topic
+                        } 
                     }
                 }
                 return results;
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 throw new searchException("pdt.svc.services.searchengine.search error. querystring=" + _queryString, exc );
             }
