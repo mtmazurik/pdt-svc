@@ -86,4 +86,8 @@ jobs:
         --port=${{ env.PORT }} \
         --image=${{ env.ARTIFACT_REGISTRY_IMAGE }} \
         --set-env-vars=Env_SearchEngine__SearchResultsMax=${{ env.APP_SEARCH_RESULTS_MAX }} \
-        --update-secrets=Env_Secrets__Google__CustomSearchCx=APP_GOOGLE_SEARCH_CX:latest,Env_Secrets__Google__CustomSearchApiKey=APP_GOOGLE_SEARCH_API_KEY:latest,Env_Secrets__Kafka__BootstrapServers=APP_KAFKA_BOOTSTRAP_SERVERS:latest,Env_Secrets__Kafka__SaslUsername=APP_KAFKA_SASL_USERNAME:latest,Env_Secrets__Kafka__SaslPassword=APP_KAFKA_SASL_PASSWORD
+        --update-secrets=Env_Secrets__Google__CustomSearchCx=APP_GOOGLE_SEARCH_CX:latest\
+        ,Env_Secrets__Google__CustomSearchApiKey=APP_GOOGLE_SEARCH_API_KEY:latest\
+        ,Env_Secrets__Kafka__BootstrapServers=APP_KAFKA_BOOTSTRAP_SERVERS:latest\
+        ,Env_Secrets__Kafka__SaslUsername=APP_KAFKA_SASL_USERNAME:latest\
+        ,Env_Secrets__Kafka__SaslPassword=APP_KAFKA_SASL_PASSWORD:latest
