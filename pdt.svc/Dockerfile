@@ -7,6 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
+ADD pdt.svc /src/
 COPY ["pdt.svc/pdt.svc.csproj", "pdt.svc/"]
 RUN dotnet restore "pdt.svc/pdt.svc.csproj"
 COPY . .
