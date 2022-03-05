@@ -6,11 +6,9 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
-WORKDIR /src
-COPY ["pdt.svc.csproj", "pdt.svc.csproj"]
-RUN dotnet restore "pdt.svc.csproj"
-COPY . .
 WORKDIR "/src"
+COPY . .
+RUN dotnet restore "pdt.svc.csproj"
 RUN dotnet build "pdt.svc.csproj" -c Release -o /app/build
 
 FROM build AS publish
